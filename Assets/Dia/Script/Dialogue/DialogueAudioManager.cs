@@ -3,28 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Dia
 {
-public class DialogueAudioManager : InstanceMono<DialogueAudioManager>
-{
-    private AudioSource Audio;
-    private AudioClip clip;
-    void Start()
+    public class DialogueAudioManager : MonoBehaviour
     {
-        Audio = GetComponent<AudioSource>();
-    }
-    public void Typing(AudioClip clip, float time,float Time)
-    {
-        this.clip = clip;
-        StartCoroutine(typing(time,Time));
-    }
-    IEnumerator typing(float time,float Time)
-    {
-        while (Time > 0)
+        private static DialogueAudioManager instance;
+        public static DialogueAudioManager Instance
         {
-            Audio.PlayOneShot(clip);
+            get
+            {
+                return instance;
+            }
+        }
+        private AudioSource Audio;
+        private AudioClip clip;
+        private void Awake()
+        {
+            instance = this;//类型转换 把this转换为T类型的对象
+            Audio = GetComponent<AudioSource>();
+        }
+        public void Typing(AudioClip clip, float time, float Time)
+        {
+            this.clip = clip;
+            StartCoroutine(typing(time, Time));
+        }
+        IEnumerator typing(float time, float Time)
+        {
+            while (Time > 0)
+            {
+                Audio.PlayOneShot(clip);
                 Time -= time;
-            yield return new WaitForSeconds(time);
+                yield return new WaitForSeconds(time);
+            }
+        }
+        void OnDestory()
+        {
+            instance = null;
         }
     }
-}
-    
+
 }
